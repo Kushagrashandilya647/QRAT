@@ -1,4 +1,6 @@
-# QR Code Attendance System
+# QRAT
+
+QR Attendance System
 
 ## Setup
 
@@ -16,4 +18,4 @@
 ---
 
 - Admin: Create sessions, generate QR codes.
-- Student: Scan QR to mark attendance. 
+- Student: Scan QR to mark attendance.
