@@ -11,6 +11,8 @@ function Login({ setUser }) {
   const [show2FAModal, setShow2FAModal] = useState(false);
   const [twoFACode, setTwoFACode] = useState('');
   const [sessionTimeout, setSessionTimeout] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Session timeout logic
   useEffect(() => {
@@ -62,6 +64,19 @@ function Login({ setUser }) {
     setUser({ ...user, twoFAVerified: true });
   };
 
+  const checkPasswordStrength = (password) => {
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    
+    if (strength < 3) return { level: 'weak', color: 'danger' };
+    if (strength < 5) return { level: 'medium', color: 'warning' };
+    return { level: 'strong', color: 'success' };
+  };
+
   return (    <div className="d-flex flex-column align-items-center justify-content-center min-vh-100 w-100 bg-light">
       <div className="bg-white shadow rounded-4 p-4 w-100" style={{maxWidth: 400}}>
         <h2 className="h3 fw-bold text-primary mb-2 text-center">
@@ -107,17 +122,33 @@ function Login({ setUser }) {
           <div className="input-group">
             <span className="input-group-text"><i className="bi bi-lock"></i></span>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={e => {
+                setPassword(e.target.value);
+                const strength = checkPasswordStrength(e.target.value);
+                setPasswordStrength(strength);
+              }}
               placeholder="Password"
               required
               className="form-control"
             />
+            <button type="button" className="btn btn-outline-secondary" onClick={() => setShowPassword(!showPassword)}>
+              <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+            </button>
           </div>
+          {password && (
+            <div className="d-flex align-items-center gap-2">
+              <div className="progress flex-grow-1" style={{height: '4px'}}>
+                <div className={`progress-bar bg-${passwordStrength.color}`} style={{width: passwordStrength.level === 'weak' ? '33%' : passwordStrength.level === 'medium' ? '66%' : '100%'}}></div>
+              </div>
+              <small className={`text-${passwordStrength.color}`}>{passwordStrength.level}</small>
+            </div>
+          )}
           <button
             type="submit"
-            className="btn btn-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2"
+            className="btn btn-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 login-btn-anim"
+            disabled={isRegister && passwordStrength.level === 'weak'}
           >
             <i className={`bi ${isRegister ? 'bi-person-plus' : 'bi-box-arrow-in-right'}`}></i>
             {isRegister ? 'Register' : 'Login'}

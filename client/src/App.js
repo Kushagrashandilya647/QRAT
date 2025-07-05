@@ -15,6 +15,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import SessionManagement from './pages/SessionManagement';
 import UserManagement from './pages/UserManagement';
 import AuditLogs from './pages/AuditLogs';
+import EmailVerification from './pages/EmailVerification';
+import ResetPassword from './pages/ResetPassword';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function AppContent() {
   const { user, logout } = useAuth();
@@ -143,6 +146,8 @@ function AppContent() {
         <Route path="/admin/sessions" element={<ProtectedRoute role="admin"><SessionManagement /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute role="admin"><UserManagement /></ProtectedRoute>} />
         <Route path="/admin/audit-logs" element={<ProtectedRoute role="admin"><AuditLogs /></ProtectedRoute>} />
+        <Route path="/verify-email" element={<EmailVerification />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         {/* Fallback */}
         <Route path="*" element={<div className="container py-5 text-center"><h2>Page Not Found</h2></div>} />
       </Routes>
@@ -152,13 +157,15 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <ToasterProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </ToasterProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToasterProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </ToasterProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
